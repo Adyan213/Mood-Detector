@@ -46,6 +46,18 @@ video, #overlay {
 }
 #start:disabled { opacity: .7; cursor: wait; }
 .frame.on #start { display: none; }
+#stop {
+  position: absolute;
+  bottom: 16px; right: 16px;
+  padding: 8px 18px;
+  border: 1.5px solid rgba(255,255,255,.7);
+  border-radius: 999px;
+  background: rgba(28,32,41,.55);
+  color: #fff;
+  font: 600 14px "Instrument Sans", sans-serif;
+  cursor: pointer;
+}
+.frame.on #stop { display: block; }
 :focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
 #status { margin-top: 12px; max-width: 60ch; font-size: 14px; color: var(--muted); }
 main > section { container-type: inline-size; }

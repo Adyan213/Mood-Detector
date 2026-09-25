@@ -26,7 +26,12 @@ const rows = LABELS.map((l) => {
 });
 
 let session, detector, smooth = null, lastRun = 0, history = [];
-let mode = "live";
+let mode = "live", running = false, loadPromise = null;
+
+function ensureModelsLoaded() {
+  if (!loadPromise) loadPromise = loadModels();
+  return loadPromise;
+}
 
 document.querySelectorAll(".tab").forEach((btn) => {
   btn.addEventListener("click", () => {
@@ -53,6 +58,8 @@ async function loadModels() {
   });
 }
 
+const stopBtn = $("stop");
+
 startBtn.addEventListener("click", async () => {
   startBtn.disabled = true;
   startBtn.textContent = "Loading...";
@@ -65,8 +72,11 @@ startBtn.addEventListener("click", async () => {
     frame.style.aspectRatio = `${video.videoWidth} / ${video.videoHeight}`;
     overlay.width = video.videoWidth;
     overlay.height = video.videoHeight;
-    await loadModels();
+    await ensureModelsLoaded();
     frame.classList.add("on");
+    startBtn.disabled = false;
+    startBtn.textContent = "Turn on camera";
+    running = true;
     statusEl.textContent = "Running on this device. Nothing you show the camera is uploaded.";
     requestAnimationFrame(loop);
   } catch (e) {
@@ -78,7 +88,24 @@ startBtn.addEventListener("click", async () => {
   }
 });
 
+stopBtn.addEventListener("click", () => {
+  running = false;
+  game.stop();
+  video.srcObject?.getTracks().forEach((t) => t.stop());
+  video.srcObject = null;
+  frame.classList.remove("on");
+  octx.clearRect(0, 0, overlay.width, overlay.height);
+  smooth = null;
+  history = [];
+  statusEl.textContent = "Camera is off. Turn it back on any time — the model stays loaded.";
+  moodEl.textContent = "Mood detector";
+  sureEl.textContent = "Turn on the camera, then make an expression.";
+  rows.forEach((li) => { li.classList.remove("top"); li.querySelector(".fill").style.width = "0%"; li.querySelector(".pct").textContent = "0%"; });
+  tctx.clearRect(0, 0, trace.width, trace.height);
+});
+
 async function loop(now) {
+  if (!running) return;
   if (now - lastRun >= STEP_MS) {
     lastRun = now;
     await step(now);
@@ -210,7 +237,7 @@ const game = (() => {
 
   return {
     start() {
-      if (!session) { gameMsg.textContent = "Turn the camera on first."; return; }
+      if (!running) { gameMsg.textContent = "Turn the camera on first."; return; }
       active = true; streak = 0; roundMs = START_MS; last = null;
       gameStartBtn.hidden = true;
       nextRound();
