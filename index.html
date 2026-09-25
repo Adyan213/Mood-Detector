@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mood detector</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,800&family=Instrument+Sans:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+  <section>
+    <div class="frame" id="frame">
+      <video id="video" playsinline muted></video>
+      <canvas id="overlay"></canvas>
+      <button id="start">Turn on camera</button>
+    </div>
+    <p id="status" role="status">Everything runs on your device. Nothing you show the camera is uploaded.</p>
+  </section>
+  <section>
+    <div class="tabs">
+      <button class="tab on" data-mode="live">Live</button>
+      <button class="tab" data-mode="game">Play a round</button>
+    </div>
+
+    <div id="live-panel">
+      <h1 id="mood" aria-live="polite">Mood detector</h1>
+      <p id="sure">Turn on the camera, then make an expression.</p>
+      <ul id="bars"></ul>
+      <canvas id="trace" width="720" height="210"></canvas>
+      <p class="fine">The last 30 seconds. Each row is one emotion, in the same order as the list above.</p>
+    </div>
+
+    <div id="game-panel" hidden>
+      <p class="eyebrow">Streak <span id="round">0</span> &middot; Best <span id="best">0</span></p>
+      <h1 id="target" aria-live="polite">Get ready</h1>
+      <div class="timerbar"><div id="timer-fill"></div></div>
+      <p id="game-msg" class="fine">Match the face above before time runs out.</p>
+      <button id="game-start" class="pill">Start game</button>
+    </div>
+
+    <p class="fine">MobileNetV2 fine-tuned on RAF-DB, about 74% accurate. Fear and disgust are its weakest classes, so expect more misses there.</p>
+  </section>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/dist/ort.min.js"></script>
+<script type="module" src="app.js"></script>
+</body>
+</html>
