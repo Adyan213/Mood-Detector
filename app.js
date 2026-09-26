@@ -2,9 +2,14 @@ import { FaceDetector, FilesetResolver } from "https://cdn.jsdelivr.net/npm/@med
 
 // Same order as training (and your confusion matrix)
 const LABELS = ["surprise", "fear", "disgust", "happy", "sad", "anger", "neutral"];
+// Live-demo calibration only — the trained weights are untouched. Positive nudges a
+// class up, negative nudges it down, applied to the logits before softmax. Start at 0
+// for everything, test on your own webcam, and adjust in small steps (0.3–0.8) —
+// nudging the *confused* class down is usually more reliable than nudging the other up.
+const BIAS = { surprise: 0, fear: 0, disgust: 0, happy: 0, sad: 0, anger: -0.6, neutral: 0 };
 const COLORS = { surprise: "#f0925a", fear: "#9a7fc0", disgust: "#7aa35f", happy: "#f2c14e", sad: "#6f94c4", anger: "#d9534f", neutral: "#b8bec6" };
 const SIZE = 224, MEAN = [0.485, 0.456, 0.406], STD = [0.229, 0.224, 0.225];
-const PAD = 0.2;         // margin around the detected face; try 0 to 0.2
+const PAD = 0.1;         // margin around the detected face; try 0 to 0.2
 const THRESHOLD = 0.3;   // below this the app says "Unsure" (chance is about 0.14)
 const SMOOTH = 0.6;      // higher = steadier label
 const STEP_MS = 100;     // how often to classify
@@ -140,8 +145,9 @@ async function classify() {
   const n = SIZE * SIZE, input = new Float32Array(3 * n);
   for (let i = 0; i < n; i++) for (let c = 0; c < 3; c++) input[c * n + i] = (data[i * 4 + c] / 255 - MEAN[c]) / STD[c];
   const out = await session.run({ [session.inputNames[0]]: new ort.Tensor("float32", input, [1, 3, SIZE, SIZE]) });
-  const logits = out[session.outputNames[0]].data, m = Math.max(...logits);
-  const e = Array.from(logits, (v) => Math.exp(v - m)), sum = e.reduce((a, c) => a + c);
+  const logits = Array.from(out[session.outputNames[0]].data, (v, i) => v + BIAS[LABELS[i]]);
+  const m = Math.max(...logits);
+  const e = logits.map((v) => Math.exp(v - m)), sum = e.reduce((a, c) => a + c);
   return e.map((v) => v / sum);
 }
 
