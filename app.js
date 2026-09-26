@@ -4,7 +4,7 @@ import { FaceDetector, FilesetResolver } from "https://cdn.jsdelivr.net/npm/@med
 const LABELS = ["surprise", "fear", "disgust", "happy", "sad", "anger", "neutral"];
 const COLORS = { surprise: "#f0925a", fear: "#9a7fc0", disgust: "#7aa35f", happy: "#f2c14e", sad: "#6f94c4", anger: "#d9534f", neutral: "#b8bec6" };
 const SIZE = 224, MEAN = [0.485, 0.456, 0.406], STD = [0.229, 0.224, 0.225];
-const PAD = 0.0;         // margin around the detected face; try 0 to 0.2
+const PAD = 0.2;         // margin around the detected face; try 0 to 0.2
 const THRESHOLD = 0.3;   // below this the app says "Unsure" (chance is about 0.14)
 const SMOOTH = 0.6;      // higher = steadier label
 const STEP_MS = 100;     // how often to classify
