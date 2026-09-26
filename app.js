@@ -6,7 +6,7 @@ const LABELS = ["surprise", "fear", "disgust", "happy", "sad", "anger", "neutral
 // class up, negative nudges it down, applied to the logits before softmax. Start at 0
 // for everything, test on your own webcam, and adjust in small steps (0.3–0.8) —
 // nudging the *confused* class down is usually more reliable than nudging the other up.
-const BIAS = { surprise: 0, fear: 0, disgust: 0, happy: 0, sad: 0, anger: -1.0, neutral: 0 };
+const BIAS = { surprise: 0, fear: 0, disgust: 0, happy: 1.0, sad: 0, anger: -1.0, neutral: 0 };
 const COLORS = { surprise: "#f0925a", fear: "#9a7fc0", disgust: "#7aa35f", happy: "#f2c14e", sad: "#6f94c4", anger: "#d9534f", neutral: "#b8bec6" };
 const SIZE = 224, MEAN = [0.485, 0.456, 0.406], STD = [0.229, 0.224, 0.225];
 const PAD = 0.1;         // margin around the detected face; try 0 to 0.2
