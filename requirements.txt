@@ -1,0 +1,7 @@
+streamlit
+streamlit-webrtc
+facenet-pytorch
+torch
+torchvision
+opencv-python-headless
+av
